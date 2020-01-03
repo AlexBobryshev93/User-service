@@ -16,8 +16,11 @@ import java.util.Collection;
 @Document(collection = "users")
 @Data
 public class User implements UserDetails {
+    @Transient
+    public static final String SEQUENCE_NAME = "users_sequence";
+
     @Id
-    private Long id;
+    private long id;
 
     @Indexed(unique = true)
     @Field(value = "username")

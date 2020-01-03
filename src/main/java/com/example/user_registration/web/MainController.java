@@ -40,7 +40,6 @@ public class MainController {
 
         //System.out.println(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setId(0l); // should be generated
         userRepo.save(user);
 
         return "redirect:/login";
