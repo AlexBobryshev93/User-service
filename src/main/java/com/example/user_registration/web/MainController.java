@@ -2,6 +2,11 @@ package com.example.user_registration.web;
 
 import com.example.user_registration.model.User;
 import com.example.user_registration.repo.UserRepo;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class MainController {
     private UserRepo userRepo;
     private PasswordEncoder passwordEncoder;
+    private MongoOperations mongoOperations;
 
-    public MainController(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public MainController(UserRepo userRepo, PasswordEncoder passwordEncoder, MongoOperations mongoOperations) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.mongoOperations = mongoOperations;
     }
 
     @GetMapping("/signup")
@@ -38,10 +45,56 @@ public class MainController {
             return "signup";
         }
 
-        //System.out.println(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
 
         return "redirect:/login";
+    }
+
+    @GetMapping("/edit")
+    public String editUser(Model model) {
+        model.addAttribute("user", userRepo.findByUsername(getCurrentUserUsername()));
+        model.addAttribute("errMsg", "");
+        return "edit_user";
+    }
+
+    @PostMapping("/edit")
+    public String updateUser(@ModelAttribute("user") User user, Model model) {
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            model.addAttribute("errMsg", "Error: check your password and try again");
+            return "edit_user";
+        }
+
+        if ((userRepo.findByUsername(user.getUsername()) != null)
+            && (!user.getUsername().equals(getCurrentUserUsername()))
+        ) {
+            model.addAttribute("errMsg", "Error: user with such name already exists");
+            return "edit_user";
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Update update = new Update().set("username", user.getUsername()).set("password", user.getPassword());
+        mongoOperations.updateFirst(new Query(Criteria.where("username").is(getCurrentUserUsername())), update, User.class);
+        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/delete")
+    public String deleteProfile() {
+        String username = getCurrentUserUsername();
+
+        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+        userRepo.deleteByUsername(username);
+
+        return "redirect:/login";
+    }
+
+    private String getCurrentUserUsername() {
+        return ((org.springframework.security.core.userdetails.User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal())
+                .getUsername();
     }
 }

@@ -6,7 +6,7 @@
 </head>
 
 <body>
-<h2>Create a new user:</h2>
+<h2>Edit your profile:</h2>
 <form method="POST" th:object="${user}">
     <label>Username: </label>
     <input type="text" th:field="*{username}" minlength="4" maxlength="20" required/><br/>
@@ -15,7 +15,7 @@
     <label>Confirm password: </label>
     <input type="password" th:field="*{confirmPassword}" required/><br/><br/>
     <i th:text="${errMsg}"></i><br/><br/>
-    <input type="submit" value="SIGN UP"/>
+    <input type="submit" value="UPDATE"/>
 </form>
 </body>
 </html>

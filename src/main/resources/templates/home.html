@@ -10,5 +10,9 @@
     <input type="submit" value="Log out"/>
 </form>
 <h2>You are signed in as <span sec:authentication="name"></span></h2>
+<a th:href="@{/edit}" class="edit">edit</a>
+<span> | </span>
+<a th:href="@{/delete}" class="delete">delete</a>
+<br/><br/>
 </body>
 </html>
