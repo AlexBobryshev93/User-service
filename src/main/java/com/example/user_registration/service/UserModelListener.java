@@ -1,5 +1,6 @@
 package com.example.user_registration.service;
 
+import com.example.user_registration.model.Admin;
 import com.example.user_registration.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
@@ -17,8 +18,16 @@ public class UserModelListener extends AbstractMongoEventListener {
 
     @Override
     public void onBeforeConvert(BeforeConvertEvent event) {
-        if (((User) event.getSource()).getId() < 1) {
-            ((User) event.getSource()).setId(sequenceGeneratorService.generateSequence(User.SEQUENCE_NAME));
+        Object user = event.getSource();
+
+        if (user instanceof Admin) { // generating next Id for Admin
+            if (((Admin) user).getId() < 1) {
+                ((Admin) user).setId(sequenceGeneratorService.generateSequence(User.SEQUENCE_NAME));
+            }
+        } else { // for User
+            if (((User) user).getId() < 1) {
+                ((User) user).setId(sequenceGeneratorService.generateSequence(User.SEQUENCE_NAME));
+            }
         }
     }
 }
