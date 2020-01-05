@@ -1,7 +1,9 @@
 package com.example.user_registration;
 
 import com.example.user_registration.model.Admin;
+import com.example.user_registration.model.Company;
 import com.example.user_registration.repo.AdminRepo;
+import com.example.user_registration.repo.CompanyRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,12 +27,20 @@ public class UserRegistrationApplication {
     }
 
     @Bean
-    public CommandLineRunner dataLoader(AdminRepo adminRepo) {
+    public CommandLineRunner dataLoader(AdminRepo adminRepo, CompanyRepo companyRepo) {
         return args -> {
+            if (companyRepo.findByName("APPLICATION_COMMAND") == null) {
+                Company company = new Company();
+                company.setName("APPLICATION_COMMAND");
+                company.setForeign(false);
+                companyRepo.save(company);
+            }
+
             if (adminRepo.findAll().isEmpty()) {
                 Admin admin = new Admin();
                 admin.setUsername("admin");
                 admin.setPassword(passwordEncoder.encode("admin"));
+                admin.setCompany(companyRepo.findByName("APPLICATION_COMMAND"));
                 adminRepo.save(admin);
             }
         };
