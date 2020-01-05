@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Security + MongoDB</title>
+</head>
+
+<body>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Log out"/>
+</form>
+<br/>
+<a th:href="@{/}">BACK TO THE HOME PAGE</a>
+<br/>
+<a th:href="@{/companies/add}">ADD NEW COMPANY</a>
+<br/>
+
+<h2>Companies list:</h2>
+<p th:if="${companiesList.isEmpty()}">[No data yet]</p>
+<div th:each="company : ${companiesList}">
+    <p th:text="'ID: ' + ${company.id}"></p>
+    <table>
+        <tr>
+            <td>Name</td>
+            <td th:text="${company.name}"></td>
+        </tr>
+        <tr>
+            <td>Foreign</td>
+            <td th:text="${company.foreign}"></td>
+        </tr>
+    </table>
+    <a th:href="${'/companies/edit/' + company.id}">edit</a>
+    <span> | </span>
+    <a th:href="${'/companies/delete/' + company.id}">delete</a>
+    <br/><br/>
+</div>
+</body>
+</html>

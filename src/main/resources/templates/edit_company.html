@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spring Security + MongoDB</title>
+</head>
+
+<body>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Log out"/>
+</form>
+<br/>
+<h2>Edit company:</h2>
+<form method="POST" th:object="${company}">
+    <label>Name: </label>
+    <input type="text" th:field="*{name}" minlength="4" maxlength="20" required/><br/>
+    <label>Foreign: </label>
+    <input type="radio" th:field="*{foreign}" value="true"><span>yes</span>
+    <input type="radio" th:field="*{foreign}" value="false"><span>no</span>
+    <br/><br/>
+    <i th:text="${errMsg}"></i><br/><br/>
+    <input type="submit" value="UPDATE"/>
+    <br/><br/>
+    <a th:href="@{/companies}">BACK TO COMPANIES LIST</a>
+</form>
+</body>
+</html>

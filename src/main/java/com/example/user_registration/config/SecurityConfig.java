@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/signup").permitAll()
                 .antMatchers("/", "/edit", "/delete").access("hasRole('ROLE_USER')")
+                .antMatchers("/companies", "/companies/*").access("hasRole('ROLE_ADMIN')")
         .and()
             .formLogin()
                 .loginPage("/login")
@@ -45,6 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login")
         .and()
             .csrf()
-                .ignoringAntMatchers("/signup", "/edit");
+                .ignoringAntMatchers("/signup", "/edit", "/companies/add", "/companies/edit/*");
     }
 }

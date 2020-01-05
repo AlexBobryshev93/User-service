@@ -9,6 +9,11 @@
 <form method="POST" th:action="@{/logout}">
     <input type="submit" value="Log out"/>
 </form>
+<div sec:authorize="hasRole('ROLE_ADMIN')">
+    <hr/>
+    <a th:href="@{/companies}">>>MANAGE COMPANIES DATA<<</a>
+    <hr/>
+</div>
 <h2>You are signed in as <span sec:authentication="name"></span></h2>
 <a th:href="@{/edit}" class="edit">edit</a>
 <span> | </span>
