@@ -30,6 +30,22 @@ public class MainController {
         this.mongoOperations = mongoOperations;
     }
 
+    @GetMapping("/")
+    public String homePage(Model model) {
+        User user = userRepo.findByUsername(getCurrentUserUsername());
+        if (user == null) user = adminRepo.findByUsername(getCurrentUserUsername());
+        model.addAttribute("user", user);
+        return "home";
+    }
+
+    @GetMapping("/company")
+    public String companyPage(Model model) {
+        User user = userRepo.findByUsername(getCurrentUserUsername());
+        if (user == null) user = adminRepo.findByUsername(getCurrentUserUsername());
+        model.addAttribute("company", user.getCompany());
+        return "company";
+    }
+
     @GetMapping("/signup")
     public String toRegistrationPage(Model model) {
         model.addAttribute("user", new User());

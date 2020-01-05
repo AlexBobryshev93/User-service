@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Spring Security + MongoDB</title>
+</head>
+
+<body>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Log out"/>
+</form>
+<br/>
+<a th:href="@{/}">BACK TO THE HOME PAGE</a>
+<br/>
+
+<h2>Your company:</h2>
+<p th:if="${company == null}">[No data yet]</p>
+<div>
+    <p sec:authorize="hasRole('ROLE_ADMIN')" th:text="'ID: ' + ${company.id}"></p>
+    <table>
+        <tr>
+            <td>Name</td>
+            <td th:text="${company.name}"></td>
+        </tr>
+        <tr>
+            <td>Foreign</td>
+            <td th:text="${company.foreign}"></td>
+        </tr>
+    </table>
+    <p sec:authorize="hasRole('ROLE_ADMIN')">
+        <a th:href="${'/companies/edit/' + company.id}">edit</a>
+        <span> | </span>
+        <a th:href="${'/companies/delete/' + company.id}">delete</a>
+    </p>
+</div>
+</body>
+</html>

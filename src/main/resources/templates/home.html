@@ -14,10 +14,16 @@
     <a th:href="@{/companies}">>>MANAGE COMPANIES DATA<<</a>
     <hr/>
 </div>
-<h2>You are signed in as <span sec:authentication="name"></span></h2>
-<a th:href="@{/edit}" class="edit">edit</a>
-<span> | </span>
-<a th:href="@{/delete}" class="delete">delete</a>
+<div>
+    <p>You are signed in as <i sec:authentication="name"></i>
+    <span th:if="${user.company != null}">
+        from <a th:text="${user.company.name}" th:href="@{/company}"></a>
+    </span></p>
+    <br/>
+    <a th:href="@{/edit}">edit</a>
+    <span> | </span>
+    <a th:href="@{/delete}">delete</a>
+</div>
 <br/><br/>
 </body>
 </html>

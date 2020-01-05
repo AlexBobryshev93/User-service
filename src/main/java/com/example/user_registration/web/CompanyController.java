@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/companies")
-public class CompanyController {
+public class CompanyController { // (!) still available by usual User
     private CompanyRepo companyRepo;
 
     public CompanyController(CompanyRepo companyRepo) {
@@ -59,7 +59,6 @@ public class CompanyController {
         return "redirect:/companies";
     }
 
-    // (!) deletes even if forbidden
     @GetMapping("/delete/{id}")
     public String deleteCompany(@PathVariable("id") Long id) {
         companyRepo.deleteById(id);
