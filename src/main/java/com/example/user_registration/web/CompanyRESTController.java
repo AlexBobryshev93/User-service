@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "companies_api", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class CompanyRESTController {
     private UserRepo userRepo;
     private AdminRepo adminRepo;
@@ -24,7 +23,9 @@ public class CompanyRESTController {
         this.companyRepo = companyRepo;
     }
 
-    @GetMapping("/users")
+    @RequestMapping(value = "/companies_api/users",
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public List<User> getUsers() {
         List<User> users = userRepo.findAll();
         users.addAll(adminRepo.findAll());
@@ -32,7 +33,9 @@ public class CompanyRESTController {
         return users;
     }
 
-    @GetMapping("/user")
+    @RequestMapping(value = "/companies_api/user",
+            method = RequestMethod.GET,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public User getUser(@RequestParam("username") String username) {
         User user = userRepo.findByUsername(username);
         if (user == null) user = adminRepo.findByUsername(username);
@@ -40,39 +43,68 @@ public class CompanyRESTController {
         return user;
     }
 
-    @PutMapping("/assign")
-    public User assignUserToCompany(@RequestBody User user, @RequestParam("companyName") String companyName) {
+    @RequestMapping(value = "/companies_api/assign",
+            method = RequestMethod.PUT,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public User assignUserToCompany(@RequestParam("username") String username, @RequestParam("companyName") String companyName) {
+        User user = userRepo.findByUsername(username);
+        if (user == null) adminRepo.findByUsername(username);
+        if (user == null) return null;
+
         user.setCompany(companyRepo.findByName(companyName));
-        if (userRepo.findByUsername(user.getUsername()) != null) userRepo.save(user);
-        else if (adminRepo.findByUsername(user.getUsername()) != null) adminRepo.save((Admin) user);
-        return user;
+        if (user instanceof Admin) return  adminRepo.save((Admin) user);
+        return userRepo.save(user);
     }
 
-    @PutMapping("/assign_all")
-    public List<User> assignAllToCompany(@RequestBody List<User> users, @RequestParam("companyName") String companyName) {
+    @RequestMapping(value = "/companies_api/assign_all",
+            method = RequestMethod.PUT,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<User> assignAllToCompany(@RequestBody List<String> usernames, @RequestParam("companyName") String companyName) {
         List<User> userList = new ArrayList<>();
-        users.forEach(user -> {assignUserToCompany(user, companyName); userList.add(user);});
+
+        usernames.forEach(username -> {
+            assignUserToCompany(username, companyName);
+
+            User nextUser = userRepo.findByUsername(username);
+            if (nextUser == null) nextUser = adminRepo.findByUsername(username);
+            if (nextUser != null) userList.add(nextUser);
+        });
 
         return userList;
     }
 
-    @PutMapping("/unassign")
-    public User unassignUser(@RequestBody User user) {
+    @RequestMapping(value = "/companies_api/unassign",
+            method = RequestMethod.PUT,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public User unassignUser(@RequestParam("username") String username) {
+        User user = userRepo.findByUsername(username);
+        if (user == null) adminRepo.findByUsername(username);
+        if (user == null) return null;
+
         user.setCompany(null);
-        if (userRepo.findByUsername(user.getUsername()) != null) userRepo.save(user);
-        else if (adminRepo.findByUsername(user.getUsername()) != null) adminRepo.save((Admin) user);
-        return user;
+        if (user instanceof Admin) return adminRepo.save((Admin) user);
+        return userRepo.save(user);
     }
 
-    @PutMapping("/unassign_all")
-    public List<User> unassignAll(@RequestBody List<User> users) {
+    @RequestMapping(value = "/companies_api/unassign_all",
+            method = RequestMethod.PUT,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<User> unassignAll(@RequestBody List<String> usernames) {
         List<User> userList = new ArrayList<>();
-        users.forEach(user -> {unassignUser(user); userList.add(user);});
+        usernames.forEach(username -> {
+            unassignUser(username);
+
+            User nextUser = userRepo.findByUsername(username);
+            if (nextUser == null) nextUser = adminRepo.findByUsername(username);
+            if (nextUser != null) userList.add(nextUser);
+        });
 
         return userList;
     }
 
-    @DeleteMapping("/delete")
+    @RequestMapping(value = "/companies_api/delete",
+            method = RequestMethod.DELETE,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public void deleteUser(@RequestParam("username") String username) {
         userRepo.deleteByUsername(username);
         adminRepo.deleteByUsername(username);
