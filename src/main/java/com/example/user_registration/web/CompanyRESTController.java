@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// http://localhost:8080/swagger-ui.html for details
 @RestController
 public class CompanyRESTController {
     private UserRepo userRepo;
