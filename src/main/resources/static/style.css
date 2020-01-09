@@ -1,0 +1,9 @@
+.error {
+    background: dodgerblue;
+    width: 25%;
+    color: black;
+    font-size: 200%;
+    font-style: italic;
+    font-weight: bold;
+}
+

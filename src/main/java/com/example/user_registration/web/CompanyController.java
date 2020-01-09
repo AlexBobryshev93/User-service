@@ -20,7 +20,7 @@ public class CompanyController {
     @GetMapping
     public String listCompanies(Model model) {
         // @PreAuthorize("hasRole('ROLE_ADMIN')") didn't work
-        if (!isCurrentUserAdmin()) throw new RuntimeException("not admin");
+        if (!isCurrentUserAdmin()) return "error";
 
         model.addAttribute("companiesList", companyRepo.findAll());
         return "companies";
@@ -29,7 +29,7 @@ public class CompanyController {
     @GetMapping("/add")
     public String addCompany(Model model) {
         // @PreAuthorize("hasRole('ROLE_ADMIN')") didn't work
-        if (!isCurrentUserAdmin()) throw new RuntimeException("not admin");
+        if (!isCurrentUserAdmin()) return "error";
 
         model.addAttribute("company", new Company());
         model.addAttribute("errMsg", "");
@@ -39,7 +39,7 @@ public class CompanyController {
     @PostMapping("/add")
     public String createCompany(@ModelAttribute("company") Company company, Model model) {
         // @PreAuthorize("hasRole('ROLE_ADMIN')") didn't work
-        if (!isCurrentUserAdmin()) throw new RuntimeException("not admin");
+        if (!isCurrentUserAdmin()) return "error";
 
         if (companyRepo.findByName(company.getName()) != null) {
             model.addAttribute("errMsg", "Error: company with such name already exists");
@@ -53,7 +53,7 @@ public class CompanyController {
     @GetMapping("/edit/{id}")
     public String editCompany(@PathVariable("id") Long id, Model model) {
         // @PreAuthorize("hasRole('ROLE_ADMIN')") didn't work
-        if (!isCurrentUserAdmin()) throw new RuntimeException("not admin");
+        if (!isCurrentUserAdmin()) return "error";
 
         model.addAttribute("company", companyRepo.findById(id));
         model.addAttribute("errMsg", "");
@@ -63,7 +63,7 @@ public class CompanyController {
     @PostMapping("/edit/{id}")
     public String updateCompany(@ModelAttribute("company") Company company, Model model) {
         // @PreAuthorize("hasRole('ROLE_ADMIN')") didn't work
-        if (!isCurrentUserAdmin()) throw new RuntimeException("not admin");
+        if (!isCurrentUserAdmin()) return "error";
 
         Company found = companyRepo.findByName(company.getName());
 
@@ -79,7 +79,7 @@ public class CompanyController {
     @GetMapping("/delete/{id}")
     public String deleteCompany(@PathVariable("id") Long id) {
         // @PreAuthorize("hasRole('ROLE_ADMIN')") didn't work
-        if (!isCurrentUserAdmin()) throw new RuntimeException("not admin");
+        if (!isCurrentUserAdmin()) return "error";
 
         companyRepo.deleteById(id);
         return "redirect:/companies";
